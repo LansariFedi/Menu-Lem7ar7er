@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سي المحرحر — Fast Food</title>
+<style>
+  /* ─── Tokens ─────────────────────────────────────────── */
+  :root {
+    --black:   #0d0d0d;
+    --deep:    #141414;
+    --card:    #1a1a1a;
+    --border:  #2a2a2a;
+    --red:     #e3000f;
+    --red-dim: #8b0009;
+    --gold:    #f5a623;
+    --white:   #f0ece4;
+    --muted:   #888;
+    --radius:  10px;
+    --nav-h:   56px;
+  }
+
+  /* ─── Reset ──────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+  }
+
+  /* ─── Hero ───────────────────────────────────────────── */
+  .hero {
+    background: var(--deep);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 36px 20px 28px;
+    border-bottom: 2px solid var(--red);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(227,0,15,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .logo-chili {
+    font-size: 3rem;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .brand-ar {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    font-family: 'Segoe UI', 'Arial Unicode MS', sans-serif;
+  }
+
+  .brand-sub {
+    font-size: 0.78rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.9;
+  }
+
+  .tagline {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-top: 2px;
+  }
+
+  /* ─── Sticky Nav ─────────────────────────────────────── */
+  .nav-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--deep);
+    border-bottom: 1px solid var(--border);
+  }
+
+  nav {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 4px;
+    padding: 8px 12px;
+  }
+  nav::-webkit-scrollbar { display: none; }
+
+  nav a {
+    flex-shrink: 0;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+    transition: all 0.18s ease;
+  }
+
+  nav a:hover,
+  nav a.active {
+    color: var(--white);
+    background: var(--red);
+    border-color: var(--red);
+  }
+
+  /* ─── Layout ─────────────────────────────────────────── */
+  main {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 12px 60px;
+  }
+
+  /* ─── Section headers ────────────────────────────────── */
+  .section {
+    margin-top: 36px;
+    scroll-margin-top: calc(var(--nav-h) + 12px);
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .section-head::before,
+  .section-head::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-label {
+    background: var(--red);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 16px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  /* ─── Menu items ─────────────────────────────────────── */
+  .items {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 11px 14px;
+    border-radius: var(--radius);
+    transition: background 0.15s;
+  }
+
+  .item:hover {
+    background: var(--card);
+  }
+
+  .item-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--white);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .item-sub {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .item-dots {
+    flex: 1;
+    border-bottom: 1px dotted var(--border);
+    margin: 0 6px;
+    align-self: center;
+    min-width: 12px;
+  }
+
+  .item-price {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--gold);
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+
+  /* ─── Divider between sub-groups ─────────────────────── */
+  .sub-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--red);
+    padding: 10px 14px 4px;
+    opacity: 0.9;
+  }
+
+  /* ─── Drinks grid ────────────────────────────────────── */
+  .drinks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  /* ─── Special combo card ─────────────────────────────── */
+  .combo-card {
+    background: linear-gradient(135deg, #1c0f0f 0%, #220c0c 100%);
+    border: 1px solid var(--red-dim);
+    border-radius: var(--radius);
+    padding: 18px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 4px;
+  }
+
+  .combo-desc {
+    flex: 1;
+  }
+
+  .combo-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.4;
+  }
+
+  .combo-note {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  .combo-price {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+
+  /* ─── Supplement grid ────────────────────────────────── */
+  .supp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  /* ─── Footer ─────────────────────────────────────────── */
+  footer {
+    text-align: center;
+    padding: 32px 16px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+  }
+
+  footer strong {
+    color: var(--red);
+  }
+
+  /* ─── Scrollspy highlight ────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Hero ──────────────────────────────────────────── -->
+<header class="hero">
+  <div class="logo-chili">🌶️</div>
+  <div class="brand-ar">سي المحرحر</div>
+  <div class="brand-sub">Fast Food</div>
+  <div class="tagline">أكلة خفيفة &nbsp;·&nbsp; Cuisine légère</div>
+</header>
+
+<!-- ── Sticky Nav ─────────────────────────────────────── -->
+<div class="nav-wrap">
+  <nav id="main-nav">
+    <a href="#pizza" class="active">🍕 Pizza</a>
+    <a href="#baguette">🥖 Baguette</a>
+    <a href="#rolls">🌯 Rolls</a>
+    <a href="#tacos">🌮 Tacos</a>
+    <a href="#ciabatta">🫓 Ciabatta</a>
+    <a href="#puccia">🥙 Puccia</a>
+    <a href="#bowls">🍚 Bowls</a>
+    <a href="#pasta">🍝 Pasta</a>
+    <a href="#supplements">➕ Suppl.</a>
+    <a href="#boissons">🥤 Boissons</a>
+  </nav>
+</div>
+
+<main>
+
+  <!-- ── Nos Pizza ──────────────────────────────────────── -->
+  <section class="section" id="pizza">
+    <div class="section-head">
+      <span class="section-label">Nos Pizza</span>
+    </div>
+    <div class="items">
+      <div class="item">
+        <span class="item-name">Margherita</span>
+        <span class="item-dots"></span>
+        <span class="item-price">10 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Neptune</span>
+        <span class="item-dots"></span>
+        <span class="item-price">12 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Jambon Fumé</span>
+        <span class="item-dots"></span>
+        <span class="item-price">12 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Pepperoni</span>
+        <span class="item-dots"></span>
+        <span class="item-price">12 500</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Mexicaine</span>
+        <span class="item-dots"></span>
+        <span class="item-price">13 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">4 Fromages</span>
+        <span class="item-dots"></span>
+        <span class="item-price">14 500</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Regina
+          <span class="item-sub">Jambon, Champignon</span>
+        </span>
+        <span class="item-dots"></span>
+        <span class="item-price">13 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Ocean
+          <span class="item-sub">Crevette Sauté</span>
+        </span>
+        <span class="item-dots"></span>
+        <span class="item-price">15 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Pizza Crap</span>
+        <span class="item-dots"></span>
+        <span class="item-price">13 000</span>
+      </div>
+    </div>
+
+    <!-- Nos Pizza 1/2 combo -->
+    <div class="sub-label">Nos Pizza 1/2</div>
+    <div class="combo-card">
+      <div class="combo-desc">
+        <div class="combo-title">2 Choix + 2 Sauces + Frites<br>+ 2 Mini Bowls Salades</div>
+        <div class="combo-note">La formule partage idéale</div>
+      </div>
+      <div class="combo-price">30 000</div>
+    </div>
+  </section>
+
+  <!-- ── Nos Baguette Farcie ────────────────────────────── -->
+  <section class="section" id="baguette">
+    <div class="section-head">
+      <span class="section-label">Nos Baguette Farcie</span>
+    </div>
+    <div class="items">
+      <div class="item">
+        <span class="item-name">Poulet Grillé</span>
+        <span class="item-dots"></span>
+        <span class="item-price">11 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Shawarma</span>
+        <span class="item-dots"></span>
+        <span class="item-price">11 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Crunchy
+          <span class="item-sub">Poulet Pané</span>
+        </span>
+        <span class="item-dots"></span>
+        <span class="item-price">12 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Kebab</span>
+        <span class="item-dots"></span>
+        <span class="item-price">13 000</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Nos Rolls ──────────────────────────────────────── -->
+  <section class="section" id="rolls">
+    <div class="section-head">
+      <span class="section-label">Nos Rolls</span>
+    </div>
+    <div class="items">
+      <div class="item">
+        <span class="item-name">Poulet Grillé</span>
+        <span class="item-dots"></span>
+        <span class="item-price">10 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Crunchy
+          <span class="item-sub">Poulet Pané</span>
+        </span>
+        <span class="item-dots"></span>
+        <span class="item-price">11 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Kebab</span>
+        <span class="item-dots"></span>
+        <span class="item-price">12 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Shawarma</span>
+        <span class="item-dots"></span>
+        <span class="item-price">10 000</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Nos Tacos ──────────────────────────────────────── -->
+  <section class="section" id="tacos">
+    <div class="section-head">
+      <span class="section-label">Nos Tacos</span>
+    </div>
+    <div class="items">
+      <div class="item">
+        <span class="item-name">Shawarma</span>
+        <span class="item-dots"></span>
+        <span class="item-price">10 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Poulet Grillé</span>
+        <span class="item-dots"></span>
+        <span class="item-price">10 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Crunchy
+          <span class="item-sub">Poulet Pané</span>
+        </span>
+        <span class="item-dots"></span>
+        <span class="item-price">11 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Cordon Bleu</span>
+        <span class="item-dots"></span>
+        <span class="item-price">11 500</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Viande Hachée</span>
+        <span class="item-dots"></span>
+        <span class="item-price">12 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Ranch de Luxe
+          <span class="item-sub">Poulet Pané, Jambon Fumé</span>
+        </span>
+        <span class="item-dots"></span>
+        <span class="item-price">12 500</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Ocean
+          <span class="item-sub">Crevette Sauté</span>
+        </span>
+        <span class="item-dots"></span>
+        <span class="item-price">14 500</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Nos Ciabatta ───────────────────────────────────── -->
+  <section class="section" id="ciabatta">
+    <div class="section-head">
+      <span class="section-label">Nos Ciabatta</span>
+    </div>
+    <div class="items">
+      <div class="item">
+        <span class="item-name">Shawarma</span>
+        <span class="item-dots"></span>
+        <span class="item-price">10 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Poulet Grillé</span>
+        <span class="item-dots"></span>
+        <span class="item-price">10 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Crunchy
+          <span class="item-sub">Poulet Pané</span>
+        </span>
+        <span class="item-dots"></span>
+        <span class="item-price">11 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Kebab</span>
+        <span class="item-dots"></span>
+        <span class="item-price">12 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Poulet Champignon</span>
+        <span class="item-dots"></span>
+        <span class="item-price">13 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Ocean
+          <span class="item-sub">Crevette Sauté</span>
+        </span>
+        <span class="item-dots"></span>
+        <span class="item-price">15 000</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Nos Puccia ─────────────────────────────────────── -->
+  <section class="section" id="puccia">
+    <div class="section-head">
+      <span class="section-label">Nos Puccia</span>
+    </div>
+    <div class="items">
+      <div class="item">
+        <span class="item-name">Thon</span>
+        <span class="item-dots"></span>
+        <span class="item-price">9 500</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Shawarma</span>
+        <span class="item-dots"></span>
+        <span class="item-price">10 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Poulet Grillé</span>
+        <span class="item-dots"></span>
+        <span class="item-price">10 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Crunchy
+          <span class="item-sub">Poulet Pané</span>
+        </span>
+        <span class="item-dots"></span>
+        <span class="item-price">11 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Jambon Fumé</span>
+        <span class="item-dots"></span>
+        <span class="item-price">10 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Kebab</span>
+        <span class="item-dots"></span>
+        <span class="item-price">12 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Poulet Champignon</span>
+        <span class="item-dots"></span>
+        <span class="item-price">13 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Ocean
+          <span class="item-sub">Crevette Sauté</span>
+        </span>
+        <span class="item-dots"></span>
+        <span class="item-price">15 000</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Nos Rice Bowls & Salades ───────────────────────── -->
+  <section class="section" id="bowls">
+    <div class="section-head">
+      <span class="section-label">Nos Rice Bowls &amp; Salades</span>
+    </div>
+    <div class="items">
+      <div class="item">
+        <span class="item-name">Bowl César</span>
+        <span class="item-dots"></span>
+        <span class="item-price">12 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Bowl Salade de Riz &amp; Frites</span>
+        <span class="item-dots"></span>
+        <span class="item-price">12 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Bowl Shawarma</span>
+        <span class="item-dots"></span>
+        <span class="item-price">17 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Bowl Kebab</span>
+        <span class="item-dots"></span>
+        <span class="item-price">17 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Bowl Crunchy
+          <span class="item-sub">Poulet Pané</span>
+        </span>
+        <span class="item-dots"></span>
+        <span class="item-price">18 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Bowl Cordon Bleu</span>
+        <span class="item-dots"></span>
+        <span class="item-price">19 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Bowl Crispy Pilons
+          <span class="item-sub">+ 3 Sauces</span>
+        </span>
+        <span class="item-dots"></span>
+        <span class="item-price">20 000</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Nos Pasta Bowls ────────────────────────────────── -->
+  <section class="section" id="pasta">
+    <div class="section-head">
+      <span class="section-label">Nos Pasta Bowls</span>
+    </div>
+    <div class="items">
+      <div class="item">
+        <span class="item-name">Alfredo
+          <span class="item-sub">Sauce blanche, Poulet, Parmigiano</span>
+        </span>
+        <span class="item-dots"></span>
+        <span class="item-price">14 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Carbonara</span>
+        <span class="item-dots"></span>
+        <span class="item-price">13 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Puttanesca</span>
+        <span class="item-dots"></span>
+        <span class="item-price">14 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Bolognese</span>
+        <span class="item-dots"></span>
+        <span class="item-price">14 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Ocean
+          <span class="item-sub">Crevette Sauté</span>
+        </span>
+        <span class="item-dots"></span>
+        <span class="item-price">15 000</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Suppléments ────────────────────────────────────── -->
+  <section class="section" id="supplements">
+    <div class="section-head">
+      <span class="section-label">Supplément</span>
+    </div>
+    <div class="supp-grid">
+      <div class="item">
+        <span class="item-name">Raclette</span>
+        <span class="item-dots"></span>
+        <span class="item-price">3 500</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Cheddar</span>
+        <span class="item-dots"></span>
+        <span class="item-price">2 500</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Gruyère</span>
+        <span class="item-dots"></span>
+        <span class="item-price">3 500</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Champignon</span>
+        <span class="item-dots"></span>
+        <span class="item-price">2 500</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Mozzarella</span>
+        <span class="item-dots"></span>
+        <span class="item-price">3 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Gratinée</span>
+        <span class="item-dots"></span>
+        <span class="item-price">3 500</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Sauce</span>
+        <span class="item-dots"></span>
+        <span class="item-price">1 500</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Boissons ───────────────────────────────────────── -->
+  <section class="section" id="boissons">
+    <div class="section-head">
+      <span class="section-label">Nos Boissons</span>
+    </div>
+    <div class="drinks-grid">
+      <div class="item">
+        <span class="item-name">Eau 0.5 L</span>
+        <span class="item-dots"></span>
+        <span class="item-price">1 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Canette</span>
+        <span class="item-dots"></span>
+        <span class="item-price">2 500</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Eau 1 L</span>
+        <span class="item-dots"></span>
+        <span class="item-price">2 000</span>
+      </div>
+      <div class="item">
+        <span class="item-name">Delio</span>
+        <span class="item-dots"></span>
+        <span class="item-price">1 500</span>
+      </div>
+      <div class="item" style="grid-column: 1 / -1;">
+        <span class="item-name">Citronnade</span>
+        <span class="item-dots"></span>
+        <span class="item-price">3 000</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <strong>سي المحرحر</strong> — Fast Food &nbsp;·&nbsp; أكلة خفيفة<br>
+  <span style="margin-top:6px;display:block;">Bon appétit !</span>
+</footer>
+
+<script>
+  // ── Scrollspy ─────────────────────────────────────────
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('#main-nav a');
+  const navH = document.querySelector('.nav-wrap').offsetHeight;
+
+  function onScroll() {
+    let current = '';
+    sections.forEach(sec => {
+      const top = sec.getBoundingClientRect().top;
+      if (top <= navH + 20) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ── Scroll active nav link into view ─────────────────
+  navLinks.forEach(a => {
+    a.addEventListener('click', () => {
+      setTimeout(() => a.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }), 400);
+    });
+  });
+</script>
+
+</body>
+</html>
